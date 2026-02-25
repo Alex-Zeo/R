@@ -1,0 +1,174 @@
+name: Validate skill
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ── Job 1: Validate skill.json ──────────────────────────────
+  validate-skill-json:
+    name: Validate skill.json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check required keys in skill.json
+        run: |
+          python3 - <<'EOF'
+          import json, sys
+
+          with open("skill.json") as f:
+              data = json.load(f)
+
+          required = [
+              "schema_version", "name", "version", "description",
+              "skill_file", "trigger_phrases", "capabilities"
+          ]
+          missing = [k for k in required if k not in data]
+
+          if missing:
+              print(f"FAIL: skill.json missing keys: {missing}")
+              sys.exit(1)
+
+          if not isinstance(data["trigger_phrases"], list) or len(data["trigger_phrases"]) == 0:
+              print("FAIL: trigger_phrases must be a non-empty list")
+              sys.exit(1)
+
+          print(f"PASS: skill.json valid — {data['name']} v{data['version']}")
+          EOF
+
+  # ── Job 2: Validate YAML front-matter in plan.md ───────────
+  validate-plan-yaml:
+    name: Validate plan.md YAML front-matter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Parse and validate plan.md front-matter
+        run: |
+          python3 - <<'EOF'
+          import yaml, sys, re
+
+          with open("plan.md") as f:
+              content = f.read()
+
+          # Extract YAML front-matter between --- delimiters
+          m = re.match(r"^---\n(.*?)\n---\n", content, re.DOTALL)
+          if not m:
+              print("FAIL: No YAML front-matter found in plan.md")
+              sys.exit(1)
+
+          try:
+              fm = yaml.safe_load(m.group(1))
+          except yaml.YAMLError as e:
+              print(f"FAIL: YAML parse error: {e}")
+              sys.exit(1)
+
+          required = ["name", "description"]
+          missing = [k for k in required if k not in fm]
+          if missing:
+              print(f"FAIL: front-matter missing keys: {missing}")
+              sys.exit(1)
+
+          print(f"PASS: plan.md front-matter valid — skill: {fm['name']}")
+          EOF
+
+  # ── Job 3: Lint R code blocks ──────────────────────────────
+  lint-code-blocks:
+    name: Lint R code blocks in plan.md
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract and lint R code blocks
+        run: |
+          python3 - <<'EOF'
+          import re, sys
+
+          with open("plan.md") as f:
+              content = f.read()
+
+          blocks = re.findall(r"```r\n(.*?)```", content, re.DOTALL)
+          print(f"Found {len(blocks)} R code blocks")
+
+          errors = 0
+          for i, block in enumerate(blocks, 1):
+              # Check balanced parentheses
+              if block.count("(") != block.count(")"):
+                  print(f"  WARN block {i}: unbalanced parentheses")
+
+              # setwd() check
+              if re.search(r"\bsetwd\s*\(", block):
+                  print(f"  FAIL block {i}: contains setwd() call")
+                  errors += 1
+
+              # install.packages() check
+              if re.search(r"\binstall\.packages\s*\(", block):
+                  print(f"  FAIL block {i}: contains install.packages() call")
+                  errors += 1
+
+          if errors:
+              print(f"\nFAIL: {errors} error(s) in code blocks")
+              sys.exit(1)
+          else:
+              print("PASS: all code blocks linted")
+          EOF
+
+  # ── Job 4: Validate examples with checklist_auto.R ─────────
+  validate-examples:
+    name: Validate example scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.4'
+
+      - name: Run checklist_auto.R on all examples
+        run: Rscript tests/checklist_auto.R examples/
+
+  # ── Job 5: Check internal Markdown links ───────────────────
+  check-links:
+    name: Check Markdown cross-references
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate section anchors referenced in README
+        run: |
+          python3 - <<'EOF'
+          import re, sys
+
+          with open("README.md") as f:
+              readme = f.read()
+
+          with open("plan.md") as f:
+              plan = f.read()
+
+          # Extract anchor references from README (e.g. plan.md#3--plot-selection-guide)
+          refs = re.findall(r"plan\.md#([\w\-]+)", readme)
+
+          # Build set of headings in plan.md → GitHub anchor format
+          headings = re.findall(r"^#{1,6}\s+(.+)$", plan, re.MULTILINE)
+          def to_anchor(h):
+              h = h.lower()
+              h = re.sub(r"[^\w\s-]", "", h)
+              h = re.sub(r"\s+", "-", h.strip())
+              return h
+
+          anchors = {to_anchor(h) for h in headings}
+
+          broken = [r for r in refs if r not in anchors]
+          if broken:
+              print(f"WARN: potentially broken README links: {broken}")
+              # Treat as warning, not failure (anchor generation can vary)
+          else:
+              print("PASS: all README → plan.md links resolve")
+          EOF
