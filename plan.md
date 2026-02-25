@@ -30,58 +30,86 @@ Always load the minimal set needed. Prefer these vetted packages:
 
 ```r
 # ── Core ──────────────────────────────────────────
-library(tidyverse)        # ggplot2, dplyr, tidyr, readr, stringr, forcats, purrr, tibble
-library(scales)           # Formatting axes (comma, percent, dollar, scientific)
+library(tidyverse)        # >= 2.0.0  — ggplot2, dplyr, tidyr, readr, stringr, forcats, purrr, tibble
+library(scales)           # >= 1.3.0  — Formatting axes (comma, percent, dollar, scientific)
 
 # ── Layout & Composition ─────────────────────────
-library(patchwork)        # Multi-panel composition  (preferred over cowplot/gridExtra)
+library(patchwork)        # >= 1.2.0  — Multi-panel composition (preferred over cowplot/gridExtra)
 
 # ── Labels & Annotations ─────────────────────────
-library(ggrepel)          # Non-overlapping text/label geoms
-library(ggtext)           # Rich-text (Markdown/HTML) in titles, labels, annotations
+library(ggrepel)          # >= 0.9.5  — Non-overlapping text/label geoms
+library(ggtext)           # >= 0.1.2  — Rich-text (Markdown/HTML) in titles, labels, annotations
 
 # ── Color ─────────────────────────────────────────
-library(viridis)          # Perceptually uniform, colorblind-safe sequential palettes
-library(RColorBrewer)     # Diverging & qualitative palettes
-library(ggsci)            # Journal-inspired palettes (NPG, AAAS, Lancet, NEJM, JAMA)
-library(colorspace)       # HCL-based palette construction & assessment
+library(viridis)          # >= 0.6.5  — Perceptually uniform, colorblind-safe sequential palettes
+library(RColorBrewer)     # >= 1.1.3  — Diverging & qualitative palettes
+library(ggsci)            # >= 3.0.0  — Journal-inspired palettes (NPG, AAAS, Lancet, NEJM, JAMA)
+library(colorspace)       # >= 2.1.0  — HCL-based palette construction & assessment
 
 # ── Themes & Typography ──────────────────────────
-library(hrbrthemes)       # Opinionated publication themes (theme_ipsum, theme_modern_rc)
-library(ggpubr)           # Publication-ready helpers + stat comparisons (theme_pubr)
-library(ggthemes)         # Extra themes (theme_tufte, theme_economist, theme_few, etc.)
+library(hrbrthemes)       # >= 0.8.7  — Opinionated publication themes (theme_ipsum, theme_modern_rc)
+library(ggpubr)           # >= 0.6.0  — Publication-ready helpers + stat comparisons (theme_pubr)
+library(ggthemes)         # >= 5.1.0  — Extra themes (theme_tufte, theme_economist, theme_few, etc.)
 
 # ── Statistical Visualization ────────────────────
-library(ggstatsplot)      # Stats-embedded plots (violin, scatter, bar, coef, etc.)
-library(ggcorrplot)       # Correlation matrices
-library(survminer)        # Kaplan-Meier & Cox diagnostics
-library(broom)            # Tidy model output for forest/coefficient plots
-library(ggeffects)        # Marginal effects / predicted values plots
+library(ggstatsplot)      # >= 0.12.0 — Stats-embedded plots (violin, scatter, bar, coef, etc.)
+library(ggcorrplot)       # >= 0.1.4  — Correlation matrices
+library(survminer)        # >= 0.4.9  — Kaplan-Meier & Cox diagnostics
+library(broom)            # >= 1.0.5  — Tidy model output for forest/coefficient plots
+library(ggeffects)        # >= 1.3.4  — Marginal effects / predicted values plots
 
 # ── Specialty Geoms & Extensions ─────────────────
-library(ggridges)         # Ridgeline / joy plots
-library(ggbeeswarm)       # Beeswarm (no overplotting) strip plots
-library(ggrain)           # Raincloud plots
-library(gghighlight)      # Highlight subsets
-library(ggforce)          # Sina plots, ellipses, facet_zoom, mark geoms
-library(gganimate)        # Animation (gif / video)
-library(ggdist)           # Distributional geoms (stat_halfeye, stat_dotsinterval)
-library(treemapify)       # Treemap geoms for ggplot2
-library(waffle)           # Waffle/isotype charts
-library(ggalluvial)       # Alluvial / Sankey diagrams
-library(ggraph)           # Network & tree layouts (with tidygraph)
+library(ggridges)         # >= 0.5.6  — Ridgeline / joy plots
+library(ggbeeswarm)       # >= 0.7.2  — Beeswarm (no overplotting) strip plots
+library(ggrain)           # >= 0.0.4  — Raincloud plots
+library(gghighlight)      # >= 0.4.1  — Highlight subsets
+library(ggforce)          # >= 0.4.2  — Sina plots, ellipses, facet_zoom, mark geoms
+library(gganimate)        # >= 1.0.9  — Animation (gif / video)
+library(ggdist)           # >= 3.3.2  — Distributional geoms (stat_halfeye, stat_dotsinterval)
+library(treemapify)       # >= 2.5.6  — Treemap geoms for ggplot2
+library(waffle)           # >= 1.0.2  — Waffle/isotype charts
+library(ggalluvial)       # >= 0.12.5 — Alluvial / Sankey diagrams
+library(ggraph)           # >= 2.2.1  — Network & tree layouts (with tidygraph)
+library(tidygraph)        # >= 1.3.1  — Tidy graph manipulation (used with ggraph)
+
+# ── Geospatial ───────────────────────────────────
+library(sf)               # >= 1.0.15 — Simple features for geospatial data
+library(rnaturalearth)    # >= 1.0.1  — World map boundaries
+library(rnaturalearthdata)# >= 1.0.0  — Data for rnaturalearth
+
+# ── Data Ingestion ───────────────────────────────
+library(readxl)           # >= 1.4.3  — Read Excel files (.xlsx, .xls)
+library(lubridate)        # >= 1.9.3  — Date/time parsing and manipulation
+library(jsonlite)         # >= 1.8.8  — JSON parsing for API responses
+library(httr2)            # >= 1.0.1  — HTTP client for REST API calls
+
+# ── Tables ───────────────────────────────────────
+library(gt)               # >= 0.10.1 — Grammar of Tables (HTML/PDF/RTF)
+library(flextable)        # >= 0.9.6  — Word/PowerPoint-ready tables
+library(gtsummary)        # >= 1.7.2  — Clinical summary tables built on gt
 
 # ── Fonts ────────────────────────────────────────
-library(systemfonts)      # Font discovery & registration (used by ragg)
-library(showtext)         # Google Fonts & custom font embedding in any device
-library(sysfonts)         # Font loading helper (bundled with showtext)
+library(systemfonts)      # >= 1.0.6  — Font discovery & registration (used by ragg)
+library(showtext)         # >= 0.9.7  — Google Fonts & custom font embedding in any device
+library(sysfonts)         # >= 0.8.9  — Font loading helper (bundled with showtext)
 
 # ── Export ────────────────────────────────────────
-library(ragg)             # High-quality AGG raster device (PNG, TIFF)
-library(svglite)          # Lightweight SVG output
+library(ragg)             # >= 1.3.0  — High-quality AGG raster device (PNG, TIFF)
+library(svglite)          # >= 2.1.3  — Lightweight SVG output
+library(sessioninfo)      # >= 1.2.2  — Reproducible session snapshots
 ```
 
 Only load what the specific plot requires. Comment out unused libraries.
+
+### Reproducibility snapshot
+
+Append this block at the end of any script you share, so collaborators can reproduce
+your exact environment:
+
+```r
+# ── Session info ──────────────────────────────────────────────
+sessioninfo::session_info()
+```
 
 ---
 
@@ -1181,14 +1209,86 @@ Before delivering any plot, verify every item below:
 
 ## 12 · Edge Cases & Troubleshooting
 
-- **Overplotting**: Use `alpha`, `geom_hex`, `geom_bin2d`, `ggbeeswarm`, or jitter.
-- **Long labels**: `coord_flip()`, `str_wrap(label, width = 20)`, or angled text.
-- **Too many categories (>8)**: Use faceting, highlight, or lumped categories (`fct_lump_n`).
-- **Date axis crowding**: Widen figure or increase `date_breaks` interval.
-- **Legend overlaps plot**: Move to `"bottom"`, or use direct labeling with `ggrepel`.
-- **Font issues in PDF**: Use `cairo_pdf` device or embed fonts with `extrafont`.
-- **Missing values warning**: Pre-filter or annotate; don't silently drop.
-- **`ylim()` vs `coord_cartesian()`**: Use `coord_cartesian()` to zoom without removing data points — critical for smoothers and boxplots.
+**Overplotting**
+Use `alpha`, `geom_hex`, `geom_bin2d`, `ggbeeswarm`, or jitter. For large n (>5000)
+prefer `geom_hex(bins = 30)` or `stat_density_2d(aes(fill = after_stat(level)), geom = "polygon")`.
+
+**Long labels**
+Use `coord_flip()`, `str_wrap(label, width = 20)`, or `guide_axis(angle = 45)`.
+For very long strings consider `forcats::fct_relabel(~str_wrap(.x, 15))`.
+
+**Too many categories (>8)**
+Use faceting, `gghighlight()`, or lump with `fct_lump_n(category, n = 7)`.
+Consider a ranked bar chart showing only top/bottom N.
+
+**Date axis crowding**
+Widen the figure or increase the `date_breaks` interval.
+`scale_x_date(date_labels = "%Y", date_breaks = "5 years")` for long time series.
+
+**Legend overlaps plot**
+Move to `"bottom"`, use direct labeling with `ggrepel`, or use `ggtext` to encode
+color in the title and remove the legend entirely.
+
+**Font issues in PDF**
+Use `cairo_pdf` device or set `useDingbats = FALSE` in `pdf()`. On Windows,
+`cairo_pdf` may not be available — install `ragg` and use `agg_png`/`agg_tiff` instead.
+
+**Missing values warning**
+Pre-filter with `drop_na()` or annotate the count in the subtitle. Never silently drop —
+document missing data explicitly: `subtitle = glue("n = {n_complete} complete obs; {n_na} excluded")`.
+
+**`ylim()` vs `coord_cartesian()`**
+Always use `coord_cartesian(ylim = c(lo, hi))` to zoom — `ylim()` removes data outside
+the range, breaking `geom_smooth`, boxplot whiskers, and violin tails.
+
+**`geom_smooth()` fails with small n**
+With fewer than ~30 points, `method = "loess"` may produce warnings. Use
+`method = "lm"` for linear trends, or `method = "gam"` with `formula = y ~ s(x, k = 3)`
+to control wiggliness. Pass `se = FALSE` if the CI band is unreliable at small n.
+
+**Log scale with zeros**
+`scale_x_log10()` silently drops zeros. Pre-transform: `mutate(x = x + 1)` (pseudocount)
+or use `scales::pseudo_log_trans()` which handles zero and negative values:
+`scale_x_continuous(trans = scales::pseudo_log_trans(base = 10))`.
+
+**`patchwork` axis range inconsistency across panels**
+When combining plots with different y-ranges that should be compared directly,
+set `plot_layout(axes = "collect")` or manually align with `coord_cartesian(ylim = ...)`.
+Use `plot_layout(axis_titles = "collect")` to suppress redundant axis labels.
+
+**`ggrepel` labels outside plot bounds**
+Pass `xlim = c(NA, max_x)` or `ylim = c(NA, max_y)` to `geom_text_repel()` /
+`geom_label_repel()` to constrain label placement. Increase `max.overlaps` or reduce
+`box.padding` if too many labels are hidden.
+
+**`showtext` renders at wrong DPI**
+Call `showtext_opts(dpi = 300)` (or your target DPI) before the `ggsave()` call —
+not at library load time. When using `ragg`, you do not need `showtext` at all since
+`ragg` handles system fonts natively.
+
+**TIFF files too large**
+Add `compression = "lzw"` to `agg_tiff()`. Typical reduction: 60–80%. For files that
+must be under a journal's file-size limit, reduce `dpi` from 600 to 300 or trim white
+space with `plot.margin = margin(2, 2, 2, 2, "mm")`.
+
+**`ggsave()` cuts off legend**
+Increase `plot.margin` in `theme()`, use `clip = "off"` in `coord_cartesian()`, or
+switch the legend to `"bottom"` where horizontal space is more available.
+
+**Raster vs. vector format decision**
+
+| Use case | Format | Device |
+|---|---|---|
+| Journal submission (photos/gradients) | TIFF, LZW | `ragg::agg_tiff` |
+| Journal submission (line art only) | PDF | `cairo_pdf` |
+| Editable figures (Illustrator) | SVG | `svglite::svglite` |
+| Slides / web | PNG | `ragg::agg_png` |
+| Word / PowerPoint | EMF or PNG | `devEMF::emf` or `ragg::agg_png` |
+
+**`coord_flip()` incompatibility with newer ggplot2**
+In ggplot2 ≥ 3.4.0 prefer `aes(y = category, x = value)` with horizontal geoms directly,
+rather than `coord_flip()`. This avoids issues with `facet_grid()` strip placement and
+is more explicit about orientation.
 
 ---
 
@@ -1198,3 +1298,508 @@ Before delivering any plot, verify every item below:
 - Run R code — it produces complete, copy-pasteable R scripts.
 - Access the user's data directly — it works with described data or built-in datasets.
 - Guarantee exact rendering — font availability and device differences may require local adjustment.
+
+---
+
+## 14 · Data Ingestion Patterns
+
+Real-world scripts start with loading data. Use these patterns before any `ggplot()` call.
+
+### 14.1 Flat files
+
+```r
+library(tidyverse)
+library(readxl)
+
+# ── CSV / TSV ─────────────────────────────────────────────────
+df <- readr::read_csv(
+  "data/results.csv",
+  col_types = cols(
+    date       = col_date(format = "%Y-%m-%d"),
+    group      = col_factor(),
+    value      = col_double(),
+    .default   = col_character()
+  ),
+  na = c("", "NA", "N/A", "n/a", ".")
+)
+
+# ── Excel ─────────────────────────────────────────────────────
+df_xl <- readxl::read_excel(
+  "data/results.xlsx",
+  sheet = "Summary",
+  range = "A1:F200",
+  col_types = c("text", "numeric", "date", "numeric", "numeric", "text")
+)
+```
+
+### 14.2 Database
+
+```r
+library(DBI)
+library(dplyr)
+
+# ── Connect (SQLite example; swap driver for Postgres/MySQL) ──
+con <- DBI::dbConnect(RSQLite::SQLite(), "data/study.db")
+
+# ── Lazy query — only fetched when collect() is called ───────
+df <- tbl(con, "measurements") %>%
+  filter(visit == 1, !is.na(value)) %>%
+  select(subject_id, group, timepoint, value) %>%
+  collect()
+
+DBI::dbDisconnect(con)
+```
+
+### 14.3 REST API (JSON)
+
+```r
+library(httr2)
+library(jsonlite)
+
+resp <- httr2::request("https://api.example.com/data") %>%
+  httr2::req_headers(Authorization = paste("Bearer", Sys.getenv("API_TOKEN"))) %>%
+  httr2::req_perform()
+
+df <- resp %>%
+  httr2::resp_body_string() %>%
+  jsonlite::fromJSON(flatten = TRUE) %>%
+  as_tibble()
+```
+
+### 14.4 Tidy reshape
+
+```r
+library(tidyverse)
+
+# ── Wide → long (one row per measurement) ─────────────────────
+df_long <- df_wide %>%
+  pivot_longer(
+    cols      = starts_with("week_"),
+    names_to  = "week",
+    names_prefix = "week_",
+    values_to = "score",
+    values_drop_na = TRUE
+  ) %>%
+  mutate(week = as.integer(week))
+
+# ── Long → wide (one column per timepoint) ────────────────────
+df_wide <- df_long %>%
+  pivot_wider(
+    id_cols   = c(subject_id, group),
+    names_from  = timepoint,
+    values_from = value,
+    names_prefix = "t"
+  )
+```
+
+### 14.5 Date/time parsing
+
+```r
+library(lubridate)
+
+df <- df %>%
+  mutate(
+    date        = ymd(date_string),                   # "2024-01-15"
+    datetime    = parse_date_time(ts, "Ymd HMS"),     # "20240115 143022"
+    month_year  = floor_date(date, "month"),
+    days_since  = as.numeric(date - min(date, na.rm = TRUE))
+  )
+```
+
+### 14.6 Factor handling before plotting
+
+```r
+library(forcats)
+
+df <- df %>%
+  mutate(
+    # Order by median value (most common for boxplot/bar)
+    group    = fct_reorder(group, value, .fun = median),
+
+    # Custom order
+    stage    = fct_relevel(stage, "Early", "Mid", "Late"),
+
+    # Lump rare categories
+    category = fct_lump_n(category, n = 6, other_level = "Other"),
+
+    # Reverse for horizontal bar charts
+    group    = fct_rev(group)
+  )
+```
+
+### 14.7 Missing value strategy
+
+```r
+# Option 1: Drop before plotting (document in subtitle)
+df_clean <- df %>% drop_na(x_var, y_var)
+n_miss   <- nrow(df) - nrow(df_clean)
+
+# Option 2: Impute and flag
+df <- df %>%
+  mutate(
+    value_imp = ifelse(is.na(value), median(value, na.rm = TRUE), value),
+    imputed   = is.na(value)
+  )
+
+# Option 3: Plot with na.rm = TRUE and annotate
+# Use subtitle = glue("{nrow(df_clean)} complete obs; {n_miss} excluded (missing y)")
+```
+
+---
+
+## 15 · Publication Tables
+
+Use tables alongside figures for summary statistics, model outputs, and demographic data.
+
+### 15.1 Package decision guide
+
+| Output target | Package | Format |
+|---|---|---|
+| HTML reports, PDF via LaTeX | `gt` | HTML, PDF, RTF, Word |
+| Word / PowerPoint submission | `flextable` | `.docx`, `.pptx` |
+| Clinical / demographic summary | `gtsummary` (wraps `gt`) | All gt formats |
+| LaTeX / knitr | `kableExtra` | LaTeX, HTML |
+
+### 15.2 Summary statistics table with `gt`
+
+```r
+library(tidyverse)
+library(gt)
+library(palmerpenguins)
+
+penguins %>%
+  filter(!is.na(sex)) %>%
+  group_by(species, sex) %>%
+  summarise(
+    n        = n(),
+    mass_mean = mean(body_mass_g, na.rm = TRUE),
+    mass_sd   = sd(body_mass_g, na.rm = TRUE),
+    flipper_mean = mean(flipper_length_mm, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  gt(groupname_col = "species") %>%
+  tab_header(
+    title    = md("**Penguin morphology by species and sex**"),
+    subtitle = "Mean ± SD; Palmer Archipelago, 2007–2009"
+  ) %>%
+  cols_label(
+    sex          = "Sex",
+    n            = "n",
+    mass_mean    = "Body mass (g)",
+    mass_sd      = "SD",
+    flipper_mean = "Flipper length (mm)"
+  ) %>%
+  fmt_number(columns = c(mass_mean, mass_sd, flipper_mean), decimals = 1) %>%
+  tab_spanner(label = "Body mass", columns = c(mass_mean, mass_sd)) %>%
+  tab_footnote(
+    footnote = "Source: palmerpenguins R package",
+    locations = cells_title(groups = "subtitle")
+  ) %>%
+  tab_options(
+    table.font.size   = 11,
+    heading.align     = "left",
+    row_group.font.weight = "bold"
+  ) %>%
+  gtsave("table_01_summary.html")   # or .pdf, .rtf, .docx
+```
+
+### 15.3 Clinical summary table with `gtsummary`
+
+```r
+library(gtsummary)
+library(palmerpenguins)
+
+penguins %>%
+  select(species, body_mass_g, flipper_length_mm, bill_length_mm, sex) %>%
+  tbl_summary(
+    by       = species,
+    statistic = list(
+      all_continuous()  ~ "{mean} ({sd})",
+      all_categorical() ~ "{n} ({p}%)"
+    ),
+    digits   = all_continuous() ~ 1,
+    label    = list(
+      body_mass_g       ~ "Body mass (g)",
+      flipper_length_mm ~ "Flipper length (mm)",
+      bill_length_mm    ~ "Bill length (mm)",
+      sex               ~ "Sex"
+    ),
+    missing_text = "Missing"
+  ) %>%
+  add_overall() %>%
+  add_p(test = list(all_continuous() ~ "kruskal.test")) %>%
+  bold_labels() %>%
+  modify_header(label ~ "**Characteristic**") %>%
+  modify_caption("**Table 1.** Penguin characteristics by species")
+```
+
+### 15.4 Regression output table with `flextable` (Word-ready)
+
+```r
+library(broom)
+library(flextable)
+
+mod <- lm(body_mass_g ~ flipper_length_mm + bill_length_mm + species, data = penguins)
+
+tidy(mod, conf.int = TRUE) %>%
+  mutate(
+    term = recode(term,
+      "(Intercept)"         = "Intercept",
+      "flipper_length_mm"   = "Flipper length (mm)",
+      "bill_length_mm"      = "Bill length (mm)",
+      "speciesChinstrap"    = "Chinstrap vs. Adelie",
+      "speciesGentoo"       = "Gentoo vs. Adelie"
+    ),
+    p.value = scales::pvalue(p.value)
+  ) %>%
+  select(term, estimate, conf.low, conf.high, p.value) %>%
+  flextable() %>%
+  set_header_labels(
+    term      = "Predictor",
+    estimate  = "Estimate",
+    conf.low  = "95% CI low",
+    conf.high = "95% CI high",
+    p.value   = "p"
+  ) %>%
+  colformat_double(j = c("estimate", "conf.low", "conf.high"), digits = 1) %>%
+  bold(part = "header") %>%
+  autofit() %>%
+  set_caption("Table 2. Linear regression predictors of body mass") %>%
+  save_as_docx(path = "table_02_regression.docx")
+```
+
+### 15.5 Export formats
+
+| Format | Code |
+|---|---|
+| HTML (gt) | `gt_tbl %>% gtsave("table.html")` |
+| PDF (gt, requires webshot2) | `gt_tbl %>% gtsave("table.pdf")` |
+| RTF (gt) | `gt_tbl %>% gtsave("table.rtf")` |
+| Word (flextable) | `ft %>% save_as_docx(path = "table.docx")` |
+| PowerPoint (flextable) | `ft %>% save_as_pptx(path = "table.pptx")` |
+| LaTeX (kableExtra) | `kbl(df, format = "latex") %>% kable_styling()` |
+
+---
+
+## 16 · Advanced Chart Types
+
+Worked examples for chart types not covered in Section 10.
+
+### 16.1 Kaplan-Meier Survival Curve
+
+```r
+# ── Kaplan-Meier survival curve with risk table ───────────────
+library(tidyverse)
+library(survival)
+library(survminer)
+
+# ── Fit KM estimator by sex ───────────────────────────────────
+fit <- survfit(Surv(time, status) ~ sex, data = lung)
+
+# ── Plot ──────────────────────────────────────────────────────
+p <- ggsurvplot(
+  fit,
+  data           = lung,
+  risk.table     = TRUE,
+  pval           = TRUE,
+  conf.int       = TRUE,
+  palette        = c("#E69F00", "#56B4E9"),   # Okabe-Ito, colorblind-safe
+  legend.labs    = c("Male", "Female"),
+  legend.title   = "Sex",
+  xlab           = "Time (days)",
+  ylab           = "Survival probability",
+  title          = "Women show higher survival probability in lung cancer",
+  ggtheme        = theme_minimal(base_size = 12),
+  risk.table.height = 0.25,
+  risk.table.y.text = FALSE
+)
+
+# ── Export (ggsurvplot returns a list, not a ggplot object) ───
+ggsave(
+  "survival_km.tiff",
+  plot   = print(p),
+  device = ragg::agg_tiff,
+  width  = 170, height = 160, units = "mm", dpi = 300, compression = "lzw"
+)
+```
+
+### 16.2 Network Graph
+
+```r
+# ── Network graph with ggraph + tidygraph ─────────────────────
+library(tidyverse)
+library(tidygraph)
+library(ggraph)
+
+# ── Construct graph from edge list ────────────────────────────
+edges <- tibble(
+  from   = c("A","A","B","B","C","D","D","E"),
+  to     = c("B","C","C","D","E","E","F","F"),
+  weight = c(3, 1, 2, 4, 2, 1, 3, 2)
+)
+nodes <- tibble(
+  name  = letters[1:6] %>% toupper(),
+  group = c("Alpha","Alpha","Beta","Beta","Gamma","Gamma")
+)
+
+g <- tbl_graph(nodes = nodes, edges = edges, directed = FALSE) %>%
+  mutate(degree = centrality_degree())
+
+# ── Plot ──────────────────────────────────────────────────────
+p <- ggraph(g, layout = "fr") +
+  geom_edge_link(aes(width = weight), alpha = 0.4, color = "grey60") +
+  geom_node_point(aes(size = degree, color = group), alpha = 0.9) +
+  geom_node_text(aes(label = name), repel = TRUE, size = 3.5,
+                 color = "grey10", fontface = "bold") +
+  scale_color_manual(
+    values = c("Alpha" = "#E69F00", "Beta" = "#56B4E9", "Gamma" = "#009E73")
+  ) +
+  scale_size_continuous(range = c(4, 12)) +
+  scale_edge_width_continuous(range = c(0.3, 2)) +
+  labs(
+    title  = "Network structure reveals two tightly connected clusters",
+    color  = "Community",
+    size   = "Degree"
+  ) +
+  theme_graph(base_family = "sans") +
+  theme(legend.position = "right")
+
+ggsave("network_graph.png", p, width = 160, height = 130, units = "mm", dpi = 300)
+```
+
+### 16.3 Choropleth Map
+
+```r
+# ── Choropleth world map ──────────────────────────────────────
+library(tidyverse)
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
+
+# ── World boundaries ──────────────────────────────────────────
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+# ── Example data: join gapminder 2007 ────────────────────────
+library(gapminder)
+gap07 <- gapminder %>%
+  filter(year == 2007) %>%
+  select(country, lifeExp, gdpPercap)
+
+world_data <- world %>%
+  left_join(gap07, by = c("name_long" = "country"))
+
+# ── Plot ──────────────────────────────────────────────────────
+p <- ggplot(world_data) +
+  geom_sf(aes(fill = lifeExp), color = "white", linewidth = 0.1) +
+  scale_fill_viridis_c(
+    option   = "plasma",
+    na.value = "grey85",
+    name     = "Life expectancy\n(years)",
+    breaks   = seq(40, 85, 15)
+  ) +
+  coord_sf(expand = FALSE) +
+  labs(
+    title   = "Life expectancy remains below 60 years across sub-Saharan Africa (2007)",
+    caption = "Source: Gapminder Foundation | Countries with missing data shown in grey"
+  ) +
+  theme_void(base_size = 11) +
+  theme(
+    plot.title      = element_text(face = "bold", size = 12, margin = margin(b = 8)),
+    plot.caption    = element_text(color = "grey50", size = 8, hjust = 1),
+    legend.position = "bottom",
+    legend.key.width = unit(2, "cm"),
+    plot.background = element_rect(fill = "aliceblue", color = NA)
+  )
+
+ggsave("map_lifeexp.png", p, width = 240, height = 150, units = "mm", dpi = 300)
+```
+
+### 16.4 Alluvial / Sankey Diagram
+
+```r
+# ── Alluvial diagram with ggalluvial ─────────────────────────
+library(tidyverse)
+library(ggalluvial)
+
+# ── Example: student major → degree → career ─────────────────
+data(majors, package = "ggalluvial")   # built-in example dataset
+
+p <- ggplot(majors,
+       aes(x = semester, stratum = curriculum, alluvium = student,
+           fill = curriculum, label = curriculum)) +
+  scale_x_discrete(expand = c(.1, .1)) +
+  geom_flow(stat = "alluvium", aes(fill = curriculum), alpha = 0.5) +
+  geom_stratum(alpha = 0.8) +
+  geom_text(stat = "stratum", size = 2.8, color = "white", fontface = "bold") +
+  scale_fill_brewer(palette = "Set2") +
+  labs(
+    title   = "Student curriculum pathways over four semesters",
+    x       = "Semester",
+    y       = "Number of students",
+    caption = "Data: ggalluvial::majors"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "none", panel.grid.major.x = element_blank())
+
+ggsave("alluvial_majors.png", p, width = 180, height = 120, units = "mm", dpi = 300)
+```
+
+### 16.5 Waffle Chart
+
+```r
+# ── Waffle chart with waffle package ─────────────────────────
+library(tidyverse)
+library(waffle)
+
+# ── Data: penguin species proportions ────────────────────────
+library(palmerpenguins)
+counts <- penguins %>%
+  count(species) %>%
+  deframe()   # named numeric vector
+
+p <- waffle(
+  counts / 3,          # divide to control square count
+  rows = 6,
+  colors = c("#E69F00", "#56B4E9", "#009E73"),
+  legend_pos = "bottom",
+  title = "Penguin species composition in the Palmer Archipelago sample",
+  xlab = "1 square = 3 birds"
+)
+
+ggsave("waffle_penguins.png", p, width = 160, height = 100, units = "mm", dpi = 300)
+```
+
+### 16.6 Ridgeline Density Plot
+
+```r
+# ── Ridgeline plot across continents ─────────────────────────
+library(tidyverse)
+library(ggridges)
+library(gapminder)
+
+p <- gapminder %>%
+  filter(year == 2007) %>%
+  mutate(continent = fct_reorder(continent, lifeExp, .fun = median)) %>%
+  ggplot(aes(x = lifeExp, y = continent, fill = continent)) +
+  geom_density_ridges(
+    alpha     = 0.7,
+    scale     = 1.4,
+    bandwidth = 3,
+    quantile_lines = TRUE,
+    quantiles = 2           # median line
+  ) +
+  scale_fill_manual(
+    values = c("#E69F00","#56B4E9","#009E73","#CC79A7","#D55E00")
+  ) +
+  scale_x_continuous(limits = c(25, 90), expand = c(0, 0)) +
+  labs(
+    title   = "Africa shows the widest spread in life expectancy (2007)",
+    x       = "Life expectancy (years)",
+    y       = NULL,
+    caption = "Source: Gapminder Foundation | Vertical line = median"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "none", panel.grid.minor = element_blank())
+
+ggsave("ridgeline_lifeexp.png", p, width = 170, height = 130, units = "mm", dpi = 300)
+```
