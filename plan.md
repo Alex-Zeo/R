@@ -123,7 +123,7 @@ Match the user's analytical goal to the best geometry. Always think:
 |---|---|---|
 | Shape of distribution | `geom_histogram`, `geom_density` | Set meaningful `binwidth`; overlay `geom_rug` for small n |
 | Compare distributions | `geom_density` + `fill` + `alpha`, `ggridges::geom_density_ridges` | Ridgelines excel for >3 groups |
-| Distribution + raw data | `ggdist::stat_halfeye`, `ggrain::geom_rain` | Raincloud = box + violin + jitter |
+| Distribution + raw data | `ggdist::stat_halfeye` + `geom_boxplot` + `ggdist::stat_dots`, or `ggrain::geom_rain` | Raincloud = half-density + boxplot + dots; prefer `stat_dots` over `geom_jitter` for deterministic layout; use `coord_flip()` for horizontal orientation |
 | Counts of categories | `geom_bar(stat="count")` | Reorder with `forcats::fct_infreq` |
 
 ### 3.2 Relationship (two variables)
@@ -955,6 +955,72 @@ ggsave("scatter_regression.png", p, width = 180, height = 130, units = "mm", dpi
 
 ### 10.2 Raincloud Plot with Statistical Comparisons
 
+**Raincloud best practices** (Allen et al. 2019, Correll 2023):
+
+- **Three layers**: half-density slab (cloud), boxplot (lightning), raw dots (rain)
+- **Prefer `ggdist::stat_dots()` over `geom_jitter()`** — deterministic dot layout avoids
+  jitter-induced visual artefacts where identical data looks different across renders
+- **Bandwidth**: set `adjust = 0.5` to `0.75` to reveal multimodality; increase to `1.0-1.5`
+  for small n (< 20) to avoid spurious spikes
+- **Boxplot**: width ~1/4 to 1/6 of violin width; always `outlier.shape = NA` (raw data
+  already shows outliers); nudge away from density slab
+- **Orientation**: horizontal (`coord_flip()`) preferred — category labels read naturally,
+  density extends rightward, better for many groups
+- **Large n (> 200-300)**: drop raw points or use quantile dotplots
+  (`stat_dots(quantiles = 100)`) to avoid overplotting
+- **Trim density**: use `trim = TRUE` to prevent density mass beyond data bounds
+- **Always set `seed`** if using jitter for reproducibility
+
+**Approach A: ggdist manual layering (maximum control)**
+
+```r
+library(tidyverse)
+library(ggdist)
+library(palmerpenguins)
+
+p <- penguins %>%
+  filter(!is.na(body_mass_g), !is.na(species)) %>%
+  ggplot(aes(x = species, y = body_mass_g, fill = species)) +
+  # Cloud — half-density slab
+  stat_halfeye(
+    adjust = 0.5,
+    width = 0.6,
+    justification = -0.2,
+    .width = 0,
+    point_colour = NA,
+    trim = TRUE
+  ) +
+  # Lightning — boxplot
+  geom_boxplot(
+    width = 0.12,
+    outlier.shape = NA,
+    alpha = 0.5,
+    position = position_nudge(x = 0.15)
+  ) +
+  # Rain — deterministic dots
+  stat_dots(
+    side = "left",
+    justification = 1.12,
+    binwidth = 50,
+    dotsize = 0.8,
+    alpha = 0.5
+  ) +
+  scale_fill_manual(values = c("#E69F00", "#56B4E9", "#009E73")) +
+  labs(
+    title    = "Gentoo penguins are significantly heavier than other species",
+    subtitle = "Body mass distributions | n = 333 complete observations",
+    x = NULL, y = "Body mass (g)",
+    caption  = "Data: palmerpenguins | Colorblind-safe Okabe-Ito palette"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "none") +
+  coord_flip()
+
+ggsave("raincloud_penguins.png", p, width = 180, height = 130, units = "mm", dpi = 300)
+```
+
+**Approach B: ggrain one-liner (quick)**
+
 ```r
 library(tidyverse)
 library(ggrain)
@@ -964,16 +1030,24 @@ library(palmerpenguins)
 p <- penguins %>%
   filter(!is.na(body_mass_g), !is.na(species)) %>%
   ggplot(aes(x = species, y = body_mass_g, fill = species, color = species)) +
-  geom_rain(alpha = 0.4, rain.side = "l",
-            boxplot.args = list(color = "grey30", outlier.shape = NA),
-            violin.args  = list(color = NA, alpha = 0.3)) +
-  stat_compare_means(comparisons = list(c("Adelie","Chinstrap"),
-                                         c("Chinstrap","Gentoo"),
-                                         c("Adelie","Gentoo")),
-                     method = "wilcox.test", label = "p.signif",
-                     step.increase = 0.08) +
-  scale_fill_manual(values = c("#FF6B35", "#004E89", "#2A9D8F")) +
-  scale_color_manual(values = c("#FF6B35", "#004E89", "#2A9D8F")) +
+  geom_rain(
+    seed = 42,
+    rain.side = "l",
+    point.args = list(alpha = 0.4, size = 1.5),
+    boxplot.args = list(color = "grey30", outlier.shape = NA, width = 0.08),
+    boxplot.args.pos = list(width = 0.08, position = position_nudge(x = 0.12)),
+    violin.args = list(color = NA, alpha = 0.5, adjust = 0.5, trim = TRUE),
+    violin.args.pos = list(side = "r", width = 0.6, position = position_nudge(x = 0.17))
+  ) +
+  stat_compare_means(
+    comparisons = list(c("Adelie","Chinstrap"),
+                       c("Chinstrap","Gentoo"),
+                       c("Adelie","Gentoo")),
+    method = "wilcox.test", label = "p.signif",
+    step.increase = 0.08
+  ) +
+  scale_fill_manual(values = c("#E69F00", "#56B4E9", "#009E73")) +
+  scale_color_manual(values = c("#E69F00", "#56B4E9", "#009E73")) +
   labs(
     title    = "Gentoo penguins are significantly heavier than other species",
     subtitle = "Body mass distributions with pairwise Wilcoxon tests",
