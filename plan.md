@@ -144,11 +144,20 @@ Match the user's analytical goal to the best geometry. Always think:
 | Bar + error bars | `geom_col` + `geom_errorbar` | Avoid dynamite plots when possible |
 
 ### 3.4 Time Series & Change
+
+> **Best practices.** Direct end-of-line labels beat legends for multi-line time
+> series (Few 2021). Always add `linetype` alongside colour for greyscale/colorblind
+> fallback. Use wider-than-tall aspect ratios (2:1 to 3:1) — time flows horizontally.
+> Annotate key events with `geom_vline()` + `annotate()`. Add small point markers to
+> show observation density. For >6-8 groups, use `gghighlight()` to grey out context
+> lines, or facet by group. Use `theme_ai_ts()` for vertical gridlines on the time axis.
+
 | Goal | Geom / Function | Notes |
 |---|---|---|
-| Trend over time | `geom_line` | Group correctly; consider `geom_ribbon` for CI |
-| Highlighted subset | `geom_line` + `gghighlight::gghighlight()` | Grays out non-highlighted |
+| Trend over time | `geom_line` + `geom_point` | Add `aes(linetype = group)` for accessibility; direct-label endpoints |
+| Highlighted subset | `geom_line` + `gghighlight::gghighlight()` | `use_direct_label = TRUE`; `unhighlighted_params = list(linewidth = 0.3, alpha = 0.3)` |
 | Area / stacked | `geom_area(position="stack")` | Use proportional (`position="fill"`) for shares |
+| Event annotation | `geom_vline(linetype="dashed")` + `annotate("text")` | Behind data layers; `hjust = 1` to avoid overlap |
 | Animated change | `gganimate::transition_time()` | Export with `anim_save()` |
 
 ### 3.5 Composition & Part-to-Whole
@@ -165,7 +174,7 @@ Match the user's analytical goal to the best geometry. Always think:
 | Regression coefficients | `ggstatsplot::ggcoefstats`, `broom::tidy` + `geom_pointrange` | Forest / dot-whisker plots |
 | Marginal effects | `ggeffects::ggpredict` + `plot()` | Or manual with `geom_ribbon` |
 | Correlation matrix | `ggcorrplot::ggcorrplot(method="circle")` | Reorder with `hclust` |
-| Survival curves | `survminer::ggsurvplot` | Includes risk table + p-value |
+| Survival curves | `survminer::ggsurvplot` or `ggsurvfit::ggsurvfit` | Risk table + CI + censoring marks + median annotation; prefer `ggsurvfit` for native ggplot2 output |
 | Diagnostics (residuals) | `ggfortify::autoplot(lm_model)` | Or build manually with `broom::augment` |
 | PCA / ordination | `ggfortify::autoplot(prcomp(...))` | Color by group, add ellipses |
 | Meta-analysis forest | `metafor` + `forest()` or custom `geom_pointrange` | |
@@ -174,7 +183,7 @@ Match the user's analytical goal to the best geometry. Always think:
 | Goal | Geom / Function | Notes |
 |---|---|---|
 | Choropleth map | `geom_sf` + `sf` package | Use `viridis` or `distiller` scales |
-| Network graph | `ggraph::ggraph` + `tidygraph` | Choose layout: `"fr"`, `"kk"`, `"tree"` |
+| Network graph | `ggraph::ggraph` + `tidygraph` + `graphlayouts` | Default layout: `"stress"` (deterministic, high quality); use `geom_edge_link0()` for performance; filter labels to top-N nodes by centrality; always `coord_fixed()` |
 
 ---
 
@@ -1060,36 +1069,98 @@ p <- penguins %>%
 ggsave("raincloud_penguins.png", p, width = 170, height = 140, units = "mm", dpi = 300)
 ```
 
-### 10.3 Faceted Time Series with Highlight
+### 10.3 Multi-Line Time Series with Direct Labels
+
+> **Best practices applied:** (1) direct end-of-line labels via `geom_text_repel()`
+> replace the legend, (2) `linetype` added alongside colour for greyscale/colorblind
+> fallback, (3) wider-than-tall aspect ratio (240 x 140 mm ≈ 1.7:1), (4) event
+> annotation with `geom_vline()` + `annotate()`, (5) small point markers at each
+> observation for data density awareness.
+
+```r
+library(tidyverse)
+library(ggrepel)
+
+# Prepare data: 6 groups with date + value columns
+# (this example uses fictional data; real scripts use project datasets)
+
+# Build colour + linetype palettes (brand-aware)
+org_colours   <- setNames(brand$qualitative[1:n_groups], group_names)
+org_linetypes <- setNames(
+  c("solid", "dashed", "dotted", "dotdash", "longdash", "twodash")[1:n_groups],
+  group_names
+)
+
+# Direct end-of-line labels (last point per group)
+df_label <- df_plot |>
+  group_by(group) |>
+  slice_max(date, n = 1, with_ties = FALSE) |>
+  ungroup()
+
+p <- ggplot(df_plot, aes(x = date, y = value, colour = group, group = group)) +
+
+  # Event annotation (behind data layers)
+  geom_vline(xintercept = event_date, linetype = "dashed",
+             colour = brand$annotation_color, linewidth = 0.4) +
+  annotate("text", x = event_date - 15, y = y_pos, label = "Event",
+           colour = brand$annotation_color, size = 3, hjust = 1,
+           family = brand$font_family) +
+
+  # Lines with dual encoding: colour + linetype
+  geom_line(aes(linetype = group),
+            linewidth = brand$line_width, alpha = brand$alpha_line) +
+
+  # Small observation markers
+  geom_point(size = brand$point_size * 0.5, alpha = brand$alpha_point * 0.6) +
+
+  # Direct labels at line endpoints
+  geom_text_repel(data = df_label, aes(label = group),
+                  size = 3.2, nudge_x = 30, direction = "y", hjust = 0,
+                  segment.color = brand$grid_major, segment.size = 0.3,
+                  min.segment.length = 0.2, family = brand$font_family,
+                  show.legend = FALSE) +
+
+  scale_colour_manual(values = org_colours) +
+  scale_linetype_manual(values = org_linetypes) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y",
+               expand = expansion(mult = c(0.02, 0.12))) +
+  labs(title = "Insight-driven title here",
+       subtitle = "Description | linetype differentiates for greyscale",
+       x = "Date", y = "Metric", caption = "Source: ...") +
+  theme_ai_ts() +
+  guides(colour = "none", linetype = "none")
+
+# Wider-than-tall for temporal data
+save_plot(p, "output.png", width = 240, height = 140)
+```
+
+#### 10.3.1 gghighlight Variant (Many Groups)
+
+When there are too many groups for distinct colours (>6-8), use `gghighlight()`
+to grey out context lines and highlight a meaningful subset:
 
 ```r
 library(tidyverse)
 library(gghighlight)
 library(gapminder)
 
-p <- gapminder %>%
-  filter(continent == "Asia") %>%
-  ggplot(aes(x = year, y = lifeExp, group = country, color = country)) +
+p <- gapminder |>
+  filter(continent == "Asia") |>
+  ggplot(aes(x = year, y = lifeExp, group = country, colour = country)) +
   geom_line(linewidth = 0.6) +
   gghighlight(max(lifeExp) > 78 | min(lifeExp) < 35,
               use_direct_label = TRUE, label_key = country,
-              unhighlighted_params = list(linewidth = 0.3, alpha = 0.4)) +
+              unhighlighted_params = list(linewidth = 0.3, alpha = 0.3)) +
   scale_x_continuous(breaks = seq(1952, 2007, 10)) +
   scale_y_continuous(limits = c(25, 85)) +
-  labs(
-    title    = "Life expectancy trajectories in Asia, 1952–2007",
-    subtitle = "Highlighted: countries reaching >78 yr or dropping below 35 yr",
-    x = "Year", y = "Life expectancy (years)",
-    caption  = "Source: Gapminder Foundation"
-  ) +
-  theme_minimal(base_size = 11) +
-  theme(
-    plot.title      = element_text(face = "bold"),
-    panel.grid.minor = element_blank(),
-    legend.position  = "none"
-  )
+  labs(title = "Life expectancy trajectories in Asia, 1952-2007",
+       subtitle = "Highlighted: countries reaching >78 yr or dropping below 35 yr",
+       x = "Year", y = "Life expectancy (years)",
+       caption = "Source: Gapminder Foundation") +
+  theme_ai_ts() +
+  theme(legend.position = "none")
 
-ggsave("asia_lifeexp_highlight.png", p, width = 200, height = 120, units = "mm", dpi = 300)
+save_plot(p, "asia_lifeexp_highlight.png", width = 240, height = 140)
 ```
 
 ### 10.4 Forest Plot (Regression Coefficients)
@@ -1660,6 +1731,25 @@ Worked examples for chart types not covered in Section 10.
 
 ### 16.1 Kaplan-Meier Survival Curve
 
+**Survival curve best practices** (KMunicate guidelines, Morris et al. 2019):
+
+- **Risk table** — always include number-at-risk below the curve, aligned with the
+  time axis. Show at clinically meaningful intervals. Use `risk.table.height = 0.25`
+  for 2 strata, `0.30` for 3+ strata.
+- **Confidence intervals** — use semi-transparent ribbons (`alpha = 0.15-0.20`) for
+  2-3 groups. Omit or use stepped lines for 4+ overlapping groups.
+- **Censoring marks** — use `"|"` (pipe/tick) at `size = 2-3`; omit when n is very
+  large and a risk table is present. Never use large `"+"` marks that obscure curves.
+- **Median annotation** — draw `surv.median.line = "hv"` (horizontal at y = 0.5,
+  vertical drop to time axis) with dashed grey lines.
+- **Max groups** — 3-4 per panel. Use faceting for 5+ groups.
+- **Y-axis** — always 0 to 1 (or 0-100%). Never truncate.
+- **Time axis** — start at 0, use clinically meaningful breaks (`break.time.by`).
+- **Color** — colorblind-safe palette; supplement with `linetype = "strata"` for
+  greyscale printing.
+- **P-value** — state the test (log-rank); report exact value, not `p < 0.05`.
+- **survminer returns a list, not a ggplot** — use `print(p)` inside `ggsave()`.
+
 ```r
 # ── Kaplan-Meier survival curve with risk table ───────────────
 library(tidyverse)
@@ -1673,18 +1763,40 @@ fit <- survfit(Surv(time, status) ~ sex, data = lung)
 p <- ggsurvplot(
   fit,
   data           = lung,
-  risk.table     = TRUE,
-  pval           = TRUE,
+  # Curve appearance
+  palette        = c("#E69F00", "#56B4E9"),
+  size           = 0.8,
+  linetype       = "strata",
+  # Confidence interval
   conf.int       = TRUE,
-  palette        = c("#E69F00", "#56B4E9"),   # Okabe-Ito, colorblind-safe
+  conf.int.alpha = 0.15,
+  # Censoring marks
+  censor         = TRUE,
+  censor.shape   = "|",
+  censor.size    = 2,
+  # Median survival annotation
+  surv.median.line = "hv",
+  # Risk table
+  risk.table     = TRUE,
+  risk.table.height = 0.25,
+  risk.table.col = "strata",
+  risk.table.y.text = FALSE,
+  tables.theme   = theme_cleantable(),
+  # P-value (log-rank)
+  pval           = TRUE,
+  pval.method    = TRUE,
+  pval.size      = 3.5,
+  # Labels
   legend.labs    = c("Male", "Female"),
   legend.title   = "Sex",
   xlab           = "Time (days)",
   ylab           = "Survival probability",
   title          = "Women show higher survival probability in lung cancer",
-  ggtheme        = theme_minimal(base_size = 12),
-  risk.table.height = 0.25,
-  risk.table.y.text = FALSE
+  # Axes
+  break.time.by  = 100,
+  ylim           = c(0, 1),
+  # Theme
+  ggtheme        = theme_minimal(base_size = 12)
 )
 
 # ── Export (ggsurvplot returns a list, not a ggplot object) ───
@@ -1692,11 +1804,34 @@ ggsave(
   "survival_km.tiff",
   plot   = print(p),
   device = ragg::agg_tiff,
-  width  = 170, height = 160, units = "mm", dpi = 300, compression = "lzw"
+  width  = 180, height = 170, units = "mm", dpi = 300, compression = "lzw"
 )
 ```
 
 ### 16.2 Network Graph
+
+**Network visualization best practices** (Schoch netVizR guide, Pedersen ggraph docs):
+
+- **Layout** — default to `"stress"` (stress majorization via graphlayouts). It is
+  deterministic, faster than Kamada-Kawai, and higher quality than Fruchterman-Reingold
+  for most graphs. Use `"fr"` only for quick exploration.
+- **Edges** — use `geom_edge_link0()` (the `0` variant) for production plots. It uses
+  native grid grobs instead of interpolating ~100 points per edge, giving dramatically
+  smaller file sizes and faster rendering. Only use `geom_edge_link()` (base variant)
+  when you need gradient coloring along the edge path.
+- **Edge alpha** — set `0.1-0.3` for dense networks; `0.3-0.5` for sparse. Lower alpha
+  reveals structural density without obscuring nodes.
+- **Nodes** — use `shape = 21` (filled circle with border) to separate `fill` (community)
+  from `colour` (border). This gives cleaner bivariate encoding.
+- **Node sizing** — map to `centrality_degree()`, `centrality_pagerank()`, or
+  `centrality_betweenness()` inline via tidygraph. Always set `scale_size(range = ...)`.
+- **Labels** — filter to top-N nodes by centrality using the `filter` aesthetic in
+  `geom_node_text()`. Set `repel = TRUE`, `max.overlaps = 20`.
+- **Large networks (>100 nodes)** — use backbone extraction, k-core filtering, or
+  community-based faceting to avoid hairball layouts.
+- **Always use `coord_fixed()`** — preserves distance relationships from the layout algorithm.
+- **Legend** — suppress edge width/alpha legends (rarely informative); use
+  `override.aes` in `guides()` to make legend symbols visible.
 
 ```r
 # ── Network graph with ggraph + tidygraph ─────────────────────
@@ -1711,7 +1846,7 @@ edges <- tibble(
   weight = c(3, 1, 2, 4, 2, 1, 3, 2)
 )
 nodes <- tibble(
-  name  = letters[1:6] %>% toupper(),
+  name  = LETTERS[1:6],
   group = c("Alpha","Alpha","Beta","Beta","Gamma","Gamma")
 )
 
@@ -1719,25 +1854,40 @@ g <- tbl_graph(nodes = nodes, edges = edges, directed = FALSE) %>%
   mutate(degree = centrality_degree())
 
 # ── Plot ──────────────────────────────────────────────────────
-p <- ggraph(g, layout = "fr") +
-  geom_edge_link(aes(width = weight), alpha = 0.4, color = "grey60") +
-  geom_node_point(aes(size = degree, color = group), alpha = 0.9) +
-  geom_node_text(aes(label = name), repel = TRUE, size = 3.5,
-                 color = "grey10", fontface = "bold") +
-  scale_color_manual(
-    values = c("Alpha" = "#E69F00", "Beta" = "#56B4E9", "Gamma" = "#009E73")
+p <- ggraph(g, layout = "stress") +
+  # Edges: 0-variant for performance, low alpha
+  geom_edge_link0(
+    aes(edge_linewidth = weight),
+    edge_colour = "grey70",
+    edge_alpha = 0.3
   ) +
-  scale_size_continuous(range = c(4, 12)) +
-  scale_edge_width_continuous(range = c(0.3, 2)) +
-  labs(
-    title  = "Network structure reveals two tightly connected clusters",
-    color  = "Community",
-    size   = "Degree"
+  # Nodes: shape 21 separates fill (community) from border
+  geom_node_point(
+    aes(size = degree, fill = group),
+    shape = 21, colour = "grey30", stroke = 0.4, alpha = 0.9
   ) +
+  # Labels: repelled, filtered to top nodes by degree
+  geom_node_text(
+    aes(label = name, filter = degree >= quantile(degree, 0.5)),
+    repel = TRUE, size = 3.5, family = "sans",
+    max.overlaps = 20, point.padding = unit(0.4, "lines")
+  ) +
+  scale_fill_manual(
+    values = c("Alpha" = "#E69F00", "Beta" = "#56B4E9", "Gamma" = "#009E73"),
+    name = "Community"
+  ) +
+  scale_size_continuous(range = c(3, 12), name = "Degree") +
+  scale_edge_linewidth_continuous(range = c(0.2, 2), guide = "none") +
+  guides(
+    fill = guide_legend(override.aes = list(size = 5)),
+    size = guide_legend(override.aes = list(fill = "grey50"))
+  ) +
+  labs(title = "Network structure reveals two tightly connected clusters") +
+  coord_fixed() +
   theme_graph(base_family = "sans") +
   theme(legend.position = "right")
 
-ggsave("network_graph.png", p, width = 160, height = 130, units = "mm", dpi = 300)
+ggsave("network_graph.png", p, width = 170, height = 140, units = "mm", dpi = 300)
 ```
 
 ### 16.3 Choropleth Map
