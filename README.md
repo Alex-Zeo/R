@@ -83,6 +83,16 @@ Every chart below was generated entirely by AI using this skill. No manual editi
 claude --skill ./plan.md "Plot highway MPG vs engine displacement colored by vehicle class"
 ```
 
+### In Claude Web (claude.ai)
+
+Go to **Settings > Integrations > Add MCP Server**, set the name to **R Visualization Skill**, and paste this URL:
+
+```
+https://web-production-51070.up.railway.app/mcp/
+```
+
+Leave all other fields blank. OAuth is handled automatically. Once connected, just ask Claude to create any R visualization and the skill activates.
+
 ### As MCP Context
 
 Point your MCP host at `skill.json` in this repository. The host will automatically
