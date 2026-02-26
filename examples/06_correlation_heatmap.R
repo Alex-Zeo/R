@@ -43,6 +43,8 @@ p <- ggcorrplot(
   labs(
     title    = "Morphological traits are strongly intercorrelated in Palmer Penguins",
     subtitle = "Pearson r | Blank cells: p ≥ 0.05 | n = 333 complete observations",
+    x        = NULL,
+    y        = NULL,
     caption  = "Data: palmerpenguins | Colorblind-safe diverging palette"
   ) +
   theme(

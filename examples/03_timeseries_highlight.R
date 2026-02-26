@@ -23,6 +23,10 @@ p <- ggplot(df, aes(x = year, y = lifeExp, group = country, color = country)) +
     label_key         = country,
     unhighlighted_params = list(linewidth = 0.3, alpha = 0.4)
   ) +
+  scale_color_manual(values = c(
+    "#E69F00", "#56B4E9", "#009E73", "#0072B2",
+    "#D55E00", "#CC79A7", "#F0E442"
+  )) +
   scale_x_continuous(breaks = seq(1952, 2007, 10)) +
   scale_y_continuous(limits = c(25, 85)) +
   labs(
