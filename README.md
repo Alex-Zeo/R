@@ -32,14 +32,6 @@ Every chart below was generated entirely by AI using this skill. No manual editi
 
 *Raincloud plot: pricing distribution across cost tiers with jittered points and half-violin density*
 
-### Time Series
-
-| Slate | Earth |
-|:---:|:---:|
-| <img src="docs/images/TS-01.png" width="400" alt="Multi-line time series, slate theme"> | <img src="docs/images/TS-01-earth.png" width="400" alt="Multi-line time series, earth theme"> |
-
-*Multi-line time series: MMLU accuracy by organisation, 2020-2024. Direct labels replace legends.*
-
 ### Statistical
 
 | Slate | Journal |
@@ -122,17 +114,17 @@ Scripts access tokens via `brand$token_name` after sourcing the shared theme eng
 
 ## 9 Chart Families, 36 Battle-Tested Scripts
 
-| Family | Scripts | Chart types |
+| Family | Charts | Best for |
 |---|---|---|
-| **CMP** Comparison | 4 | Grouped bar, lollipop, violin + jitter, dumbbell |
-| **COM** Composition | 4 | Stacked bar, treemap, waffle, alluvial |
-| **COR** Correlation | 4 | Scatter + trend, labeled scatter, correlation matrix, bubble |
-| **DST** Distribution | 4 | Histogram + density, ridgeline, raincloud, ECDF |
-| **GEO** Geospatial | 4 | Choropleth, bubble map, hex tile, faceted choropleth |
-| **NET** Network | 3 | Force-directed, tree, circular |
-| **STA** Statistical | 4 | Forest plot, PCA biplot, regression diagnostics, QQ |
-| **SUR** Survival | 2 | Kaplan-Meier, KM + risk table |
-| **TS** Time Series | 4 | Multi-line, stacked area, line + ribbon, dual facet |
+| **Comparison** | Grouped bar, lollipop, violin + jitter, dumbbell | Ranking items, A/B results, benchmark scores |
+| **Composition** | Stacked bar, treemap, waffle, alluvial | Part-to-whole breakdowns, budget flows, category shares |
+| **Correlation** | Scatter + trend, labeled scatter, matrix, bubble | Relationship discovery, regression, feature co-occurrence |
+| **Distribution** | Histogram + density, ridgeline, raincloud, ECDF | Spread and shape of continuous variables, group comparisons |
+| **Geospatial** | Choropleth, bubble map, hex tile, faceted choropleth | Regional patterns, country rankings, spatial density |
+| **Network** | Force-directed, tree, circular | Collaboration graphs, org hierarchies, citation clusters |
+| **Statistical** | Forest plot, PCA biplot, regression diagnostics, QQ | Meta-analyses, model diagnostics, effect-size summaries |
+| **Survival** | Kaplan-Meier, KM + risk table | Time-to-event analysis, clinical trials, churn modeling |
+| **Time Series** | Multi-line, stacked area, line + ribbon, dual facet | Trends over time, forecasts, seasonality, period comparisons |
 
 ---
 
