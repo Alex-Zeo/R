@@ -78,7 +78,10 @@
       "#E69F00", "#56B4E9", "#009E73", "#0072B2", "#D55E00", "#CC79A7",
       "#F0E442", "okabe", "Okabe",
       "scale_fill_brewer", "scale_color_brewer",
-      "colorblind", "plasma", "magma", "inferno", "cividis"
+      "colorblind", "plasma", "magma", "inferno", "cividis",
+      "brand\\$qualitative", "scale_colour_brand", "scale_color_brand",
+      "scale_fill_brand", "scale_colour_manual", "scale_color_manual",
+      "scale_fill_gradient2", "brand\\$diverging"
     ), collapse = "|"),
     negate  = FALSE
   ),
@@ -91,9 +94,9 @@
   ),
   list(
     id      = "R-11",
-    desc    = "Axis labels (x or y) in labs()",
+    desc    = "Axis labels (x or y) in labs() or scale name",
     type    = "error",
-    pattern = "labs\\s*\\([^)]*[xy]\\s*=",
+    pattern = "labs\\([\\s\\S]*?[xy]\\s*=|scale_[xy]_[\\s\\S]*?name\\s*=|x\\s*=\\s*NULL|y\\s*=\\s*NULL",
     negate  = FALSE
   ),
   list(
@@ -102,8 +105,147 @@
     type    = "warning",
     pattern = "session_info|sessionInfo",
     negate  = FALSE
+  ),
+
+  # ── COR-family checks (correlation charts) ──────────────────
+  list(
+    id         = "COR-01",
+    desc       = "Trend line present (geom_smooth or geom_abline with lm)",
+    type       = "error",
+    pattern    = "geom_smooth\\(|geom_abline\\(",
+    negate     = FALSE,
+    applies_to = "cor_scatter",
+    rubric     = "bad"
+  ),
+  list(
+    id         = "COR-02",
+    desc       = "Correlation or R-squared annotation present",
+    type       = "error",
+    pattern    = "R\\^2|r_sq|r\\.squared|r_squared|R\\\\\\^2|italic\\(R\\)|cor\\(|pearson|spearman",
+    negate     = FALSE,
+    applies_to = "cor",
+    rubric     = "okay"
+  ),
+  list(
+    id         = "COR-03",
+    desc       = "Overplotting handled (alpha or jitter or hex present)",
+    type       = "warning",
+    pattern    = "alpha\\s*=|geom_jitter|geom_hex|geom_bin2d|position.*jitter",
+    negate     = FALSE,
+    applies_to = "cor_scatter",
+    rubric     = "okay"
+  ),
+  list(
+    id         = "COR-04",
+    desc       = "Log scale used where data spans >2 orders of magnitude",
+    type       = "warning",
+    pattern    = "scale_[xy]_log10|log\\s*scale|trans\\s*=.*log|coord_trans.*log",
+    negate     = FALSE,
+    applies_to = "cor_scatter",
+    rubric     = "good"
+  ),
+  list(
+    id         = "COR-05",
+    desc       = "Scatter aspect ratio near 1:1 (coord_fixed or similar dims)",
+    type       = "warning",
+    pattern    = "coord_fixed|coord_equal|aspect\\.ratio",
+    negate     = FALSE,
+    applies_to = "cor_scatter",
+    rubric     = "excellent"
+  ),
+  list(
+    id         = "COR-06",
+    desc       = "Confidence interval band present (se = TRUE in geom_smooth)",
+    type       = "warning",
+    pattern    = "se\\s*=\\s*TRUE|geom_ribbon|alpha_ribbon",
+    negate     = FALSE,
+    applies_to = "cor_scatter",
+    rubric     = "good"
+  ),
+  list(
+    id         = "COR-07",
+    desc       = "Label overlap managed (ggrepel or check_overlap)",
+    type       = "warning",
+    pattern    = "geom_text_repel|geom_label_repel|check_overlap\\s*=\\s*TRUE",
+    negate     = FALSE,
+    applies_to = "cor_labeled",
+    rubric     = "good"
+  ),
+  list(
+    id         = "COR-08",
+    desc       = "Diverging scale centered at midpoint = 0",
+    type       = "error",
+    pattern    = "midpoint\\s*=\\s*0",
+    negate     = FALSE,
+    applies_to = "cor_matrix",
+    rubric     = "bad"
+  ),
+  list(
+    id         = "COR-09",
+    desc       = "Bubble size legend present (scale_size with guide)",
+    type       = "error",
+    pattern    = "scale_size|guide_legend.*size|size.*guide_legend",
+    negate     = FALSE,
+    applies_to = "cor_bubble",
+    rubric     = "bad"
+  ),
+  list(
+    id         = "COR-10",
+    desc       = "Point alpha uses brand token (brand$alpha_point)",
+    type       = "warning",
+    pattern    = "brand\\$alpha_point|alpha_point",
+    negate     = FALSE,
+    applies_to = "cor",
+    rubric     = "good"
+  ),
+  list(
+    id         = "COR-11",
+    desc       = "Annotation color from brand tokens (brand$annotation_color)",
+    type       = "warning",
+    pattern    = "brand\\$annotation_color|annotation_color",
+    negate     = FALSE,
+    applies_to = "cor",
+    rubric     = "excellent"
+  ),
+  list(
+    id         = "COR-12",
+    desc       = "Heatmap uses coord_fixed for square tiles",
+    type       = "error",
+    pattern    = "coord_fixed|coord_equal",
+    negate     = FALSE,
+    applies_to = "cor_matrix",
+    rubric     = "okay"
   )
 )
+
+# ── Detect chart family from filename ────────────────────────
+.detect_family <- function(path) {
+  bn <- tolower(basename(path))
+  if (grepl("^cor_", bn) || grepl("^COR", bn)) {
+    # Sub-family detection for specialized checks
+    if (grepl("matrix|heatmap|corr_matrix", bn)) return("cor_matrix")
+    if (grepl("bubble", bn))                     return("cor_bubble")
+    if (grepl("labeled|label", bn))              return("cor_labeled")
+    return("cor")
+  }
+  "all"
+}
+
+# ── Check whether a rule applies to a given chart family ─────
+.rule_applies <- function(rule, family) {
+  applies <- rule$applies_to %||% "all"
+  if (applies == "all") return(TRUE)
+  # "cor" rules apply to all cor sub-families (scatter, labeled, bubble, matrix)
+  if (applies == "cor") return(grepl("^cor", family))
+  # "cor_scatter" rules apply to scatter-like charts (cor, cor_labeled, cor_bubble)
+  # but NOT cor_matrix
+
+  if (applies == "cor_scatter") {
+    return(family %in% c("cor", "cor_labeled", "cor_bubble"))
+  }
+  # Specific sub-family must match exactly
+  applies == family
+}
 
 # ── Core validator ────────────────────────────────────────────
 validate_script <- function(path) {
@@ -113,18 +255,22 @@ validate_script <- function(path) {
   }
 
   content <- paste(readLines(path, warn = FALSE), collapse = "\n")
+  family  <- .detect_family(path)
   errors   <- 0L
   warnings <- 0L
 
-  cat(sprintf("\n── Validating: %s ─────────────────────────\n", basename(path)))
+  cat(sprintf("\n── Validating: %s (family: %s) ────────────\n",
+              basename(path), family))
 
   for (rule in .RULES) {
-    matched  <- grepl(rule$pattern, content, perl = TRUE)
-    passed   <- if (rule$negate) !matched else matched
-    status   <- if (passed) "PASS" else toupper(rule$type)
-    icon     <- if (passed) "✓" else if (rule$type == "error") "✗" else "⚠"
+    if (!.rule_applies(rule, family)) next
 
-    cat(sprintf("  %s [%s] %s — %s\n", icon, rule$id, status, rule$desc))
+    matched  <- grepl(rule$pattern, content, perl = TRUE)
+    passed   <- if (isTRUE(rule$negate)) !matched else matched
+    status   <- if (passed) "PASS" else toupper(rule$type)
+    icon     <- if (passed) "\u2713" else if (rule$type == "error") "\u2717" else "\u26A0"
+
+    cat(sprintf("  %s [%s] %s \u2014 %s\n", icon, rule$id, status, rule$desc))
 
     if (!passed && rule$type == "error")   errors   <- errors   + 1L
     if (!passed && rule$type == "warning") warnings <- warnings + 1L
