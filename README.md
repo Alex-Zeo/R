@@ -4,75 +4,73 @@
 [![MCP Skill](https://img.shields.io/badge/MCP-skill-blue)](skill.json)
 [![Validate skill](https://github.com/Alex-Zeo/R/actions/workflows/validate.yml/badge.svg)](https://github.com/Alex-Zeo/R/actions/workflows/validate.yml)
 
-An AI skill that generates **publication-quality R visualizations** using ggplot2 and the
-tidyverse ecosystem. Load it as context whenever you want polished, reproducible R charts
-ready for journals, slides, or dashboards.
+**You shouldn't need a PhD in ggplot2 to make a chart that belongs in a journal.** This skill gives any AI agent the deep R visualization knowledge that normally takes years to build: the right geom for every analytical goal, colorblind-safe palettes by default, publication-grade export settings, and 108 quality checks that catch the mistakes reviewers will. Describe your data and what you want to show. Get back a complete, styled, reproducible R script ready for your next paper, deck, or dashboard.
 
 ---
 
 ## Gallery
 
-Every chart below was generated entirely by AI using this skill — no manual editing.
+Every chart below was generated entirely by AI using this skill. No manual editing.
 
 ### Comparison
 
 <img src="docs/images/CMP-01.png" width="600" alt="Grouped bar chart comparing LLM benchmark scores">
 
-*Grouped bar chart — LLM benchmark scores across MMLU, GPQA Diamond, and MATH-500*
+*Grouped bar chart: LLM benchmark scores across MMLU, GPQA Diamond, and MATH-500*
 
 ### Correlation
 
 | Slate | Aurora |
 |:---:|:---:|
-| <img src="docs/images/COR-01.png" width="400" alt="Scatter plot with regression — slate theme"> | <img src="docs/images/COR-01-aurora.png" width="400" alt="Scatter plot with regression — aurora theme"> |
+| <img src="docs/images/COR-01.png" width="400" alt="Scatter plot with regression, slate theme"> | <img src="docs/images/COR-01-aurora.png" width="400" alt="Scatter plot with regression, aurora theme"> |
 
-*Scatter + OLS regression — intelligence index vs. API price (log scale). Same data, two brand templates.*
+*Scatter + OLS regression: intelligence index vs. API price (log scale). Same data, two brand templates.*
 
 ### Distribution
 
 <img src="docs/images/DST-03.png" width="600" alt="Raincloud plot of LLM pricing tiers">
 
-*Raincloud plot — pricing distribution across cost tiers with jittered points and half-violin density*
+*Raincloud plot: pricing distribution across cost tiers with jittered points and half-violin density*
 
 ### Time Series
 
 | Slate | Earth |
 |:---:|:---:|
-| <img src="docs/images/TS-01.png" width="400" alt="Multi-line time series — slate theme"> | <img src="docs/images/TS-01-earth.png" width="400" alt="Multi-line time series — earth theme"> |
+| <img src="docs/images/TS-01.png" width="400" alt="Multi-line time series, slate theme"> | <img src="docs/images/TS-01-earth.png" width="400" alt="Multi-line time series, earth theme"> |
 
-*Multi-line time series — MMLU accuracy by organisation, 2020-2024. Direct labels replace legends.*
+*Multi-line time series: MMLU accuracy by organisation, 2020-2024. Direct labels replace legends.*
 
 ### Statistical
 
 | Slate | Journal |
 |:---:|:---:|
-| <img src="docs/images/STA-01.png" width="400" alt="Forest plot — slate theme"> | <img src="docs/images/STA-01-journal.png" width="400" alt="Forest plot — journal theme"> |
+| <img src="docs/images/STA-01.png" width="400" alt="Forest plot, slate theme"> | <img src="docs/images/STA-01-journal.png" width="400" alt="Forest plot, journal theme"> |
 
-*Forest plot — mean ECI capability scores with confidence intervals, ordered by effect size*
+*Forest plot: mean ECI capability scores with confidence intervals, ordered by effect size*
 
 ### Survival
 
 <img src="docs/images/SUR-01.png" width="600" alt="Kaplan-Meier survival curve with risk table">
 
-*Kaplan-Meier curve with number-at-risk table — benchmark saturation analysis*
+*Kaplan-Meier curve with number-at-risk table: benchmark saturation analysis*
 
 ### Geospatial
 
 <img src="docs/images/GEO-01.png" width="700" alt="World choropleth map">
 
-*Choropleth map — 2024 AI Global Index rankings with viridis colour scale*
+*Choropleth map: 2024 AI Global Index rankings with viridis colour scale*
 
 ### Network
 
 <img src="docs/images/NET-01.png" width="500" alt="Force-directed network graph">
 
-*Force-directed network — AI organisation collaboration clusters, node size = degree centrality*
+*Force-directed network: AI organisation collaboration clusters, node size = degree centrality*
 
 ### Composition
 
 <img src="docs/images/COM-04.png" width="700" alt="Alluvial flow diagram">
 
-*Alluvial diagram — flow of AI model releases from organisation to task category to country*
+*Alluvial diagram: flow of AI model releases from organisation to task category to country*
 
 ---
 
@@ -99,7 +97,7 @@ for an R visualization.
 
 ## Brand Template System
 
-All charts support 4 built-in brand templates that control fonts, colours, backgrounds, and spacing:
+No more debating hex codes. All charts support 4 built-in brand templates that control fonts, colours, backgrounds, and spacing. Every palette is colorblind-safe, so your work is accessible from day one:
 
 | Template | Font | Palette | Background | Best for |
 |---|---|---|---|---|
@@ -108,11 +106,11 @@ All charts support 4 built-in brand templates that control fonts, colours, backg
 | **Earth** | Georgia | Paul Tol Muted | Warm cream | Reports, warm tone |
 | **Journal** | Palatino | Tableau-10 | White | Print publications, tight margins |
 
-Scripts access tokens via `brand$token_name` after sourcing the shared theme engine. Every visual property — point sizes, line widths, alpha values, margins, colours — comes from brand tokens rather than hardcoded values.
+Scripts access tokens via `brand$token_name` after sourcing the shared theme engine. Every visual property (point sizes, line widths, alpha values, margins, colours) comes from brand tokens rather than hardcoded values.
 
 ---
 
-## 9 Chart Families (36 Scripts)
+## 9 Chart Families, 36 Battle-Tested Scripts
 
 | Family | Scripts | Chart types |
 |---|---|---|
@@ -138,9 +136,9 @@ This skill activates on prompts containing any of:
 
 ---
 
-## What This Skill Produces
+## What You Get Back
 
-Given a description of your data and analytical goal, the skill returns a **complete,
+You describe your data and your analytical goal. The skill returns a **complete,
 self-contained R script** that:
 
 - Loads only the required libraries from the vetted package stack
@@ -173,9 +171,9 @@ Every generated script passes a 26-point quality checklist before delivery.
 
 ## Quality Validation
 
-Two validation systems ensure every script meets publication standards:
+Every script is held to the same standard a journal reviewer would enforce. Two validation systems make sure nothing slips through:
 
-**Automated checklist** (`tests/checklist_auto.R`) — 12 base rules plus family-specific checks:
+**Automated checklist** (`tests/checklist_auto.R`): 12 base rules plus family-specific checks:
 - Library calls present, `ggsave()` with explicit dimensions and DPI
 - Colorblind-safe palette (Okabe-Ito, viridis, or brand tokens)
 - No `setwd()`, no `install.packages()`, no hardcoded paths
@@ -242,7 +240,7 @@ Ready-to-run R scripts are in the [`examples/`](examples/) directory:
 See [CONTRIBUTING.md](CONTRIBUTING.md) for how to add new chart types, fix R syntax,
 or expand the troubleshooting section.
 
-All changes should target `plan.md` — there is no build step, test runner, or
+All changes should target `plan.md`. There is no build step, test runner, or
 compilation. Run `tests/checklist_auto.R` against any new code example before submitting.
 
 ---
@@ -250,8 +248,8 @@ compilation. Run `tests/checklist_auto.R` against any new code example before su
 ## Limitations
 
 - Does not generate interactive widgets (`plotly`, Shiny)
-- Does not execute R code — produces complete scripts for the user to run
-- Does not access user data directly — works with described data or built-in datasets
+- Does not execute R code. It produces complete scripts for the user to run
+- Does not access user data directly. It works with described data or built-in datasets
 
 See [Section 13](plan.md#13--what-this-skill-cannot-do) for the full list.
 
