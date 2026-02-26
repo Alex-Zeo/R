@@ -1,11 +1,78 @@
-# r-high-fidelity-viz
+# R High-Fidelity Visualization Skill
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![MCP Skill](https://img.shields.io/badge/MCP-skill-blue)](skill.json)
+[![Validate skill](https://github.com/Alex-Zeo/R/actions/workflows/validate.yml/badge.svg)](https://github.com/Alex-Zeo/R/actions/workflows/validate.yml)
 
 An AI skill that generates **publication-quality R visualizations** using ggplot2 and the
 tidyverse ecosystem. Load it as context whenever you want polished, reproducible R charts
 ready for journals, slides, or dashboards.
+
+---
+
+## Gallery
+
+Every chart below was generated entirely by AI using this skill — no manual editing.
+
+### Comparison
+
+<img src="docs/images/CMP-01.png" width="600" alt="Grouped bar chart comparing LLM benchmark scores">
+
+*Grouped bar chart — LLM benchmark scores across MMLU, GPQA Diamond, and MATH-500*
+
+### Correlation
+
+| Slate | Aurora |
+|:---:|:---:|
+| <img src="docs/images/COR-01.png" width="400" alt="Scatter plot with regression — slate theme"> | <img src="docs/images/COR-01-aurora.png" width="400" alt="Scatter plot with regression — aurora theme"> |
+
+*Scatter + OLS regression — intelligence index vs. API price (log scale). Same data, two brand templates.*
+
+### Distribution
+
+<img src="docs/images/DST-03.png" width="600" alt="Raincloud plot of LLM pricing tiers">
+
+*Raincloud plot — pricing distribution across cost tiers with jittered points and half-violin density*
+
+### Time Series
+
+| Slate | Earth |
+|:---:|:---:|
+| <img src="docs/images/TS-01.png" width="400" alt="Multi-line time series — slate theme"> | <img src="docs/images/TS-01-earth.png" width="400" alt="Multi-line time series — earth theme"> |
+
+*Multi-line time series — MMLU accuracy by organisation, 2020-2024. Direct labels replace legends.*
+
+### Statistical
+
+| Slate | Journal |
+|:---:|:---:|
+| <img src="docs/images/STA-01.png" width="400" alt="Forest plot — slate theme"> | <img src="docs/images/STA-01-journal.png" width="400" alt="Forest plot — journal theme"> |
+
+*Forest plot — mean ECI capability scores with confidence intervals, ordered by effect size*
+
+### Survival
+
+<img src="docs/images/SUR-01.png" width="600" alt="Kaplan-Meier survival curve with risk table">
+
+*Kaplan-Meier curve with number-at-risk table — benchmark saturation analysis*
+
+### Geospatial
+
+<img src="docs/images/GEO-01.png" width="700" alt="World choropleth map">
+
+*Choropleth map — 2024 AI Global Index rankings with viridis colour scale*
+
+### Network
+
+<img src="docs/images/NET-01.png" width="500" alt="Force-directed network graph">
+
+*Force-directed network — AI organisation collaboration clusters, node size = degree centrality*
+
+### Composition
+
+<img src="docs/images/COM-04.png" width="700" alt="Alluvial flow diagram">
+
+*Alluvial diagram — flow of AI model releases from organisation to task category to country*
 
 ---
 
@@ -30,6 +97,37 @@ for an R visualization.
 
 ---
 
+## Brand Template System
+
+All charts support 4 built-in brand templates that control fonts, colours, backgrounds, and spacing:
+
+| Template | Font | Palette | Background | Best for |
+|---|---|---|---|---|
+| **Slate** | Helvetica Neue | Paul Tol Bright | White | General purpose, clean |
+| **Aurora** | Avenir Next | Paul Tol Vibrant | White | Presentations, bold accents |
+| **Earth** | Georgia | Paul Tol Muted | Warm cream | Reports, warm tone |
+| **Journal** | Palatino | Tableau-10 | White | Print publications, tight margins |
+
+Scripts access tokens via `brand$token_name` after sourcing the shared theme engine. Every visual property — point sizes, line widths, alpha values, margins, colours — comes from brand tokens rather than hardcoded values.
+
+---
+
+## 9 Chart Families (36 Scripts)
+
+| Family | Scripts | Chart types |
+|---|---|---|
+| **CMP** Comparison | 4 | Grouped bar, lollipop, violin + jitter, dumbbell |
+| **COM** Composition | 4 | Stacked bar, treemap, waffle, alluvial |
+| **COR** Correlation | 4 | Scatter + trend, labeled scatter, correlation matrix, bubble |
+| **DST** Distribution | 4 | Histogram + density, ridgeline, raincloud, ECDF |
+| **GEO** Geospatial | 4 | Choropleth, bubble map, hex tile, faceted choropleth |
+| **NET** Network | 3 | Force-directed, tree, circular |
+| **STA** Statistical | 4 | Forest plot, PCA biplot, regression diagnostics, QQ |
+| **SUR** Survival | 2 | Kaplan-Meier, KM + risk table |
+| **TS** Time Series | 4 | Multi-line, stacked area, line + ribbon, dual facet |
+
+---
+
 ## Trigger Keywords
 
 This skill activates on prompts containing any of:
@@ -47,8 +145,9 @@ self-contained R script** that:
 
 - Loads only the required libraries from the vetted package stack
 - Prepares data using tidy patterns
-- Builds a polished ggplot2 visualization
+- Builds a polished ggplot2 visualization with insight-driven titles
 - Applies a colorblind-safe palette by default
+- Uses brand tokens for all visual properties
 - Exports at publication-grade resolution with `ggsave()`
 
 Every generated script passes a 26-point quality checklist before delivery.
@@ -72,36 +171,22 @@ Every generated script passes a 26-point quality checklist before delivery.
 
 ---
 
-## Example Prompts & Outputs
+## Quality Validation
 
-### Scatter with regression
+Two validation systems ensure every script meets publication standards:
 
-**Prompt:**
-> "Plot highway MPG vs engine displacement, colored by vehicle class, with a regression
-> line and outlier labels."
+**Automated checklist** (`tests/checklist_auto.R`) — 12 base rules plus family-specific checks:
+- Library calls present, `ggsave()` with explicit dimensions and DPI
+- Colorblind-safe palette (Okabe-Ito, viridis, or brand tokens)
+- No `setwd()`, no `install.packages()`, no hardcoded paths
+- COR-family: trend lines, R-squared annotations, overplotting handling, coord_fixed for heatmaps
+- Chart family auto-detection from filename for targeted validation
 
-**Output:** `examples/01_scatter_regression.R` — uses `ggplot2`, `ggrepel`, `ggsci`;
-exports 180 × 130 mm PNG at 300 DPI.
-
----
-
-### Raincloud distributions
-
-**Prompt:**
-> "Raincloud plot of penguin body mass by species with pairwise Wilcoxon tests."
-
-**Output:** `examples/02_raincloud_distributions.R` — uses `ggrain`, `ggpubr`;
-Okabe-Ito colorblind-safe palette; exports 170 × 140 mm PNG.
-
----
-
-### Multi-panel composite
-
-**Prompt:**
-> "Three-panel composite figure from palmerpenguins: scatter, ridge density, and bar chart."
-
-**Output:** `examples/05_multipanel_composite.R` — uses `patchwork`, `ggridges`;
-panel tags A/B/C; exports 220 × 180 mm PNG.
+**26-point quality checklist** ([Section 11](plan.md#11--quality-checklist)):
+- Insight-driven title + units in axis labels
+- Greyscale legibility pass
+- No chartjunk, no 3D effects
+- Fully self-contained and reproducible
 
 ---
 
@@ -149,19 +234,6 @@ Ready-to-run R scripts are in the [`examples/`](examples/) directory:
 | `04_forest_plot.R` | Forest plot | `datasets::mtcars` |
 | `05_multipanel_composite.R` | Multi-panel (patchwork) | `palmerpenguins` |
 | `06_correlation_heatmap.R` | Correlation heatmap | `palmerpenguins` |
-
----
-
-## Quality Guarantee
-
-Every script generated by this skill is verified against the 26-point checklist in
-[Section 11](plan.md#11--quality-checklist), covering:
-
-- Insight-driven title + units in axis labels
-- Colorblind-safe palette with greyscale pass
-- Explicit export dimensions and DPI
-- No chartjunk, no 3D effects
-- Fully self-contained (no `setwd()`, no `install.packages()`)
 
 ---
 

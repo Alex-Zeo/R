@@ -12,6 +12,9 @@
 *.svg
 *.eps
 
+# ── Allow README gallery images ──────────────────────────────
+!docs/images/*.png
+
 # ── OS ────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db

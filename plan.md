@@ -236,7 +236,6 @@ ggplot(d, aes(x, y, color = group, linetype = group)) +
   scale_linetype_manual(values = c("solid", "dashed", "dotdash", "twodash", "longdash"))
 
 # ── Color + Fill pattern (bars — requires ggpattern) ──────────
-# install.packages("ggpattern")
 library(ggpattern)
 ggplot(d, aes(x, y, fill = group, pattern = group)) +
   geom_col_pattern(pattern_density = 0.35, pattern_colour = "grey30") +

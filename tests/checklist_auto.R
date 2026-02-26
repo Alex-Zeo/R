@@ -306,6 +306,8 @@ if (!interactive()) {
   args <- commandArgs(trailingOnly = TRUE)
   if (length(args) == 0L) {
     ok <- validate_all("examples/")
+  } else if (length(args) == 1L && dir.exists(args)) {
+    ok <- validate_all(args)
   } else {
     ok <- all(vapply(args, validate_script, logical(1L)))
   }
